@@ -1,0 +1,1912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Birthday Love Letter ✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Press Start 2P', monospace;
+            overflow-x: hidden;
+            background: #0d1b2a;
+            min-height: 100vh;
+            position: relative;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        /* Background Music */
+        #bgMusic {
+            display: none;
+        }
+
+        /* Progress Hearts - Enhanced */
+        .progress-hearts {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 8px;
+            padding: 15px;
+            background: rgba(13, 27, 42, 0.8);
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .progress-hearts:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.3);
+        }
+
+        .progress-heart {
+            width: 20px;
+            height: 20px;
+            background: #444;
+            transform: rotate(45deg);
+            position: relative;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            cursor: pointer;
+        }
+
+        .progress-heart::before,
+        .progress-heart::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #444;
+            border-radius: 50%;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .progress-heart::before {
+            top: -10px;
+            left: 0;
+        }
+
+        .progress-heart::after {
+            top: 0;
+            left: -10px;
+        }
+
+        .progress-heart.filled {
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+            animation: heartPulse 1s ease-in-out, heartGlow 2s ease-in-out infinite alternate;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.6);
+        }
+
+        .progress-heart.filled::before,
+        .progress-heart.filled::after {
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+        }
+
+        @keyframes heartPulse {
+            0% { transform: rotate(45deg) scale(1); }
+            50% { transform: rotate(45deg) scale(1.3); }
+            100% { transform: rotate(45deg) scale(1); }
+        }
+
+        @keyframes heartGlow {
+            0% { box-shadow: 0 0 20px rgba(255, 105, 180, 0.6); }
+            100% { box-shadow: 0 0 30px rgba(255, 105, 180, 0.9), 0 0 40px rgba(255, 105, 180, 0.4); }
+        }
+
+        /* Progress Tracker Notification */
+        .progress-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, rgba(255, 105, 180, 0.95), rgba(255, 20, 147, 0.95));
+            color: white;
+            padding: 20px 30px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 2000;
+            opacity: 0;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.5);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .progress-notification.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* Enhanced Starry Background */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(180deg, #0d1b2a 0%, #1e3a5f 50%, #2a5298 100%);
+        }
+
+        .star {
+            position: absolute;
+            background: #fff;
+            width: 2px;
+            height: 2px;
+            animation: pixelTwinkle 3s infinite alternate;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            border-radius: 50%;
+        }
+
+        .star:hover {
+            transform: scale(3);
+            background: linear-gradient(45deg, #ffd700, #ffff00);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .star.plus {
+            background: none;
+            color: #fff;
+            font-size: 8px;
+            line-height: 1;
+            transition: all 0.3s ease;
+        }
+
+        .star.plus::before {
+            content: '+';
+        }
+
+        .star.plus:hover {
+            transform: scale(2) rotate(45deg);
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+        }
+
+        @keyframes pixelTwinkle {
+            0% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0.6; transform: scale(1); }
+        }
+
+        /* Floating Sparkles */
+        .sparkle {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: linear-gradient(45deg, #ffd700, #ffff00);
+            pointer-events: none;
+            z-index: 100;
+            border-radius: 50%;
+            animation: sparkleFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes sparkleFloat {
+            0%, 100% { 
+                opacity: 0; 
+                transform: translateY(0px) scale(0);
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(-10px) scale(1);
+            }
+            90% {
+                opacity: 1;
+                transform: translateY(-100px) scale(1);
+            }
+        }
+
+        /* Page Container - Enhanced */
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            color: #e8d5b7;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .page.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Enhanced Message Box */
+        .pixel-message-box {
+            background: linear-gradient(135deg, rgba(42, 82, 152, 0.95), rgba(30, 58, 95, 0.95));
+            border: 4px solid rgba(255, 255, 255, 0.8);
+            padding: 40px;
+            max-width: 550px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 5px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .pixel-message-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4), 0 10px 25px rgba(255, 105, 180, 0.2);
+        }
+
+        .pixel-message-box::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #ff69b4, #4a90a4, #ffd700, #ff69b4);
+            background-size: 400% 400%;
+            z-index: -1;
+            border-radius: 15px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        .pixel-message-box:hover::before {
+            opacity: 0.7;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Enhanced Input and Button Styles */
+        .secret-input {
+            background: rgba(30, 58, 95, 0.8);
+            border: 3px solid rgba(255, 255, 255, 0.6);
+            color: #e8d5b7;
+            padding: 15px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            margin: 20px 0;
+            text-align: center;
+            width: 250px;
+            border-radius: 10px;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            backdrop-filter: blur(5px);
+        }
+
+        .secret-input:focus {
+            outline: none;
+            box-shadow: 0 0 25px rgba(255, 105, 180, 0.6), 0 0 50px rgba(255, 105, 180, 0.3);
+            border-color: #ff69b4;
+            transform: scale(1.05);
+        }
+
+        .pixel-btn {
+            background: linear-gradient(135deg, #4a90a4, #5ba7bd);
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            color: #fff;
+            padding: 15px 30px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            text-decoration: none;
+            display: inline-block;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(74, 144, 164, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pixel-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .pixel-btn:hover::before {
+            left: 100%;
+        }
+
+        .pixel-btn:hover {
+            background: linear-gradient(135deg, #5ba7bd, #6bc4e0);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 30px rgba(74, 144, 164, 0.6), 0 0 30px rgba(255, 105, 180, 0.3);
+            border-color: #ff69b4;
+        }
+
+        .pixel-btn:active {
+            transform: translateY(-1px) scale(1.02);
+            box-shadow: 0 6px 15px rgba(74, 144, 164, 0.4);
+        }
+
+        .pixel-btn:disabled {
+            background: linear-gradient(135deg, #666, #777);
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.6;
+        }
+
+        /* Enhanced Globe Animation */
+        .pixel-globe {
+            width: 160px;
+            height: 160px;
+            margin: 20px auto;
+            position: relative;
+            animation: pixelSpin 12s linear infinite;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 10px 30px rgba(107, 155, 210, 0.4));
+        }
+
+        .pixel-globe:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 15px 40px rgba(107, 155, 210, 0.6)) drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+        }
+
+        .pixel-globe svg {
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        /* Star Constellation Minigame Styles */
+        .constellation-game {
+            width: 100%;
+            max-width: 500px;
+            height: 350px;
+            background: linear-gradient(135deg, rgba(13, 27, 42, 0.9), rgba(30, 58, 95, 0.9));
+            border: 3px solid rgba(255, 255, 255, 0.6);
+            border-radius: 15px;
+            position: relative;
+            margin: 20px auto;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .constellation-star {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(45deg, #ffd700, #ffff00);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+            z-index: 10;
+        }
+
+        .constellation-star:hover {
+            transform: scale(1.5);
+            background: linear-gradient(45deg, #ffff00, #ffd700);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.9);
+        }
+
+        .constellation-star.connected {
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.8);
+            animation: starPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes starPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .constellation-line {
+            position: absolute;
+            height: 3px;
+            background: linear-gradient(90deg, #ff69b4, #ff1493);
+            transform-origin: left center;
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.6);
+            border-radius: 2px;
+        }
+
+        .constellation-line.visible {
+            opacity: 1;
+            animation: lineGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes lineGlow {
+            0% { box-shadow: 0 0 10px rgba(255, 105, 180, 0.6); }
+            100% { box-shadow: 0 0 20px rgba(255, 105, 180, 0.9), 0 0 30px rgba(255, 105, 180, 0.4); }
+        }
+
+        .constellation-message {
+            background: linear-gradient(135deg, rgba(255, 105, 180, 0.9), rgba(255, 20, 147, 0.9));
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.4);
+        }
+
+        .constellation-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Enhanced Heart Collection */
+        .heart-collection-area {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 250px;
+            border: 3px solid rgba(255, 255, 255, 0.6);
+            margin: 20px auto;
+            overflow: hidden;
+            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(13, 27, 42, 0.7), rgba(30, 58, 95, 0.7));
+            backdrop-filter: blur(10px);
+        }
+
+        .floating-heart {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+            transform: rotate(45deg);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            animation: floatHeart 4s ease-in-out infinite;
+            box-shadow: 0 0 15px rgba(255, 105, 180, 0.6);
+        }
+
+        .floating-heart::before,
+        .floating-heart::after {
+            content: '';
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+            border-radius: 50%;
+        }
+
+        .floating-heart::before {
+            top: -14px;
+            left: 0;
+        }
+
+        .floating-heart::after {
+            top: 0;
+            left: -14px;
+        }
+
+        .floating-heart:hover {
+            transform: rotate(45deg) scale(1.3);
+            box-shadow: 0 0 25px rgba(255, 105, 180, 0.9);
+        }
+
+        @keyframes floatHeart {
+            0%, 100% { transform: rotate(45deg) translateY(0px); }
+            25% { transform: rotate(45deg) translateY(-15px); }
+            50% { transform: rotate(45deg) translateY(-25px); }
+            75% { transform: rotate(45deg) translateY(-10px); }
+        }
+
+        /* Bible Verse Display */
+        .bible-verse {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 248, 255, 0.95));
+            color: #333;
+            padding: 30px;
+            border-radius: 20px;
+            margin: 30px auto;
+            max-width: 500px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .bible-verse.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .bible-verse h3 {
+            color: #ff69b4;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .bible-verse p {
+            font-style: italic;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .bible-verse .reference {
+            color: #666;
+            font-size: 10px;
+            margin-top: 15px;
+        }
+
+        /* Enhanced Instructions */
+        .instruction {
+            background: linear-gradient(135deg, rgba(30, 58, 95, 0.9), rgba(42, 82, 152, 0.9));
+            border: 2px solid rgba(255, 215, 0, 0.6);
+            padding: 20px;
+            margin: 20px 0;
+            color: #ffd700;
+            font-size: 10px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            animation: instructionGlow 3s ease-in-out infinite alternate;
+            transition: all 0.3s ease;
+        }
+
+        .instruction:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+        }
+
+        @keyframes instructionGlow {
+            0% { 
+                box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+                border-color: rgba(255, 215, 0, 0.6);
+            }
+            100% { 
+                box-shadow: 0 0 25px rgba(255, 215, 0, 0.7);
+                border-color: rgba(255, 215, 0, 0.9);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .pixel-message-box {
+                padding: 25px;
+                font-size: 10px;
+            }
+            
+            .pixel-btn {
+                padding: 12px 20px;
+                font-size: 10px;
+            }
+            
+            .progress-hearts {
+                top: 10px;
+                right: 10px;
+                gap: 5px;
+                padding: 10px;
+            }
+
+            .progress-heart {
+                width: 16px;
+                height: 16px;
+            }
+
+            .progress-heart::before,
+            .progress-heart::after {
+                width: 16px;
+                height: 16px;
+            }
+
+            .progress-heart::before {
+                top: -8px;
+            }
+
+            .progress-heart::after {
+                left: -8px;
+            }
+
+            .constellation-game {
+                height: 280px;
+            }
+
+            .progress-notification {
+                font-size: 12px;
+                padding: 15px 20px;
+            }
+        }
+
+        /* Enhanced Typography */
+        h1, h2 {
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-size: 16px;
+            background: linear-gradient(45deg, #e8d5b7, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        p {
+            margin-bottom: 18px;
+            line-height: 1.8;
+            font-size: 11px;
+            opacity: 0.9;
+        }
+
+        /* Additional Animations */
+        @keyframes heartCollect {
+            0% { 
+                transform: rotate(45deg) scale(1); 
+                opacity: 1; 
+            }
+            50% {
+                transform: rotate(45deg) scale(1.5) translateY(-20px);
+                opacity: 0.8;
+            }
+            100% { 
+                transform: rotate(45deg) scale(0) translateY(-60px); 
+                opacity: 0; 
+            }
+        }
+
+        @keyframes confettiFall {
+            0% { 
+                transform: translateY(-100vh) rotate(0deg); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: translateY(100vh) rotate(720deg); 
+                opacity: 0; 
+            }
+        }
+
+        @keyframes flyPixelPlane {
+            0% { left: -60px; }
+            100% { left: calc(100% + 60px); }
+        }
+
+        @keyframes drawPixelTrail {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+
+        /* Memory Game Enhancements */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            max-width: 400px;
+            width: 100%;
+            margin: 30px auto;
+        }
+
+        .memory-card {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4a5568, #2d3748);
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 8px;
+            text-align: center;
+            border-radius: 10px;
+            color: #e8d5b7;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            perspective: 1000px;
+        }
+
+        .memory-card:hover {
+            transform: translateY(-5px) rotateY(10deg);
+            box-shadow: 0 10px 25px rgba(255, 105, 180, 0.3);
+        }
+
+        .memory-card.flipped {
+            background: linear-gradient(135deg, #ff69b4, #ff1493);
+            color: white;
+        }
+
+        .memory-card.matched {
+            background: linear-gradient(135deg, #32cd32, #00ff00);
+            pointer-events: none;
+            animation: matchedCard 0.6s ease-in-out;
+        }
+
+        @keyframes matchedCard {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1) rotateZ(5deg); }
+            100% { transform: scale(1); }
+        }
+
+        /* Counter Enhancements */
+        .heart-counter, .match-counter, .candle-hint, .constellation-hint {
+            background: linear-gradient(135deg, rgba(30, 58, 95, 0.9), rgba(42, 82, 152, 0.9));
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            padding: 15px 25px;
+            margin: 15px auto;
+            border-radius: 15px;
+            font-size: 12px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            max-width: 300px;
+        }
+
+        .heart-counter {
+            color: #ff69b4;
+        }
+
+        /* Love Message Display */
+        .love-message {
+            background: linear-gradient(135deg, rgba(255, 105, 180, 0.95), rgba(255, 20, 147, 0.95));
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            margin: 20px auto;
+            max-width: 450px;
+            opacity: 0;
+            transform: translateY(20px) scale(0.9);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 15px 35px rgba(255, 105, 180, 0.4);
+            text-align: center;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .love-message.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .love-message h4 {
+            color: #fff;
+            font-size: 13px;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .love-message p {
+            font-style: italic;
+            opacity: 0.95;
+            margin: 0;
+        }
+
+        .final-love-message {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.95), rgba(255, 165, 0, 0.95));
+            color: #333;
+            padding: 30px;
+            border-radius: 20px;
+            margin: 30px auto;
+            max-width: 500px;
+            opacity: 0;
+            transform: translateY(30px) scale(0.9);
+            transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.3);
+            text-align: center;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .final-love-message.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .final-love-message strong {
+            color: #ff69b4;
+            font-size: 13px;
+        }
+
+        .candle-hint, .constellation-hint {
+            color: #ffd700;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Music -->
+    <audio id="bgMusic" loop>
+        <source src="https://www.soundjay.com/misc/sounds-788.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Progress Hearts -->
+    <div class="progress-hearts">
+        <div class="progress-heart" id="heart1" title="Secret Word"></div>
+        <div class="progress-heart" id="heart2" title="Flight Path"></div>
+        <div class="progress-heart" id="heart3" title="Heart Collection"></div>
+        <div class="progress-heart" id="heart4" title="Star Constellation"></div>
+        <div class="progress-heart" id="heart5" title="Memory Game"></div>
+        <div class="progress-heart" id="heart6" title="Birthday Candles"></div>
+    </div>
+
+    <!-- Progress Notification -->
+    <div class="progress-notification" id="progressNotification"></div>
+
+    <!-- Pixel Starry Background -->
+    <div class="stars" id="stars"></div>
+
+    <!-- Page 1: Secret Word Challenge -->
+    <div class="page active" id="page1">
+        <div class="pixel-message-box">
+            <h1>🔒 A Message Written in Love</h1>
+            <p>There's something I've whispered to you</p>
+            <p>in quiet moments, across oceans...</p>
+            <p style="margin-top: 20px; font-style: italic; color: #ffd700;">The words that mean "you are everything to me."</p>
+            <div class="instruction">💕 Hint: Non-English. 2 words. 7 letters. What you are to me — always.</div>
+            <input type="text" class="secret-input" id="secretWord" placeholder="Type the words..." maxlength="10">
+            <br>
+            <button class="pixel-btn" onclick="checkSecretWord()">✨ Unlock My Heart</button>
+        </div>
+    </div>
+
+    <!-- Page 2: Flight Path Puzzle -->
+    <div class="page" id="page2">
+        <div class="pixel-message-box">
+            <h1>✈️ Guide My Love to You</h1>
+            <p>Click the waypoints in order</p>
+            <p>to guide this message across the world</p>
+            <div class="pixel-globe">
+                <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Ocean base circle -->
+                    <circle cx="32" cy="32" r="30" fill="#6B9BD2" stroke="#5A8BC4" stroke-width="2"/>
+                    
+                    <!-- Darker ocean shading for dimension -->
+                    <path d="M 32 2 A 30 30 0 0 1 50 18 A 28 28 0 0 0 32 4 Z" fill="#5A8BC4"/>
+                    <path d="M 50 46 A 30 30 0 0 1 32 62 A 28 28 0 0 0 50 44 Z" fill="#4A7AB4"/>
+                    
+                    <!-- North America -->
+                    <path d="M 12 18 L 18 16 L 22 20 L 26 18 L 24 24 L 20 26 L 16 28 L 12 26 Z" fill="#7A9B6B"/>
+                    <path d="M 14 28 L 18 30 L 22 32 L 20 36 L 16 34 L 12 32 Z" fill="#7A9B6B"/>
+                    
+                    <!-- South America -->
+                    <path d="M 20 36 L 24 38 L 26 44 L 28 50 L 24 52 L 20 48 L 18 42 Z" fill="#6B8B5A"/>
+                    
+                    <!-- Europe -->
+                    <path d="M 28 16 L 32 14 L 36 16 L 34 20 L 30 22 L 28 20 Z" fill="#8BAC7A"/>
+                    
+                    <!-- Africa -->
+                    <path d="M 30 22 L 34 24 L 36 30 L 38 36 L 36 42 L 32 44 L 28 40 L 26 34 L 28 28 Z" fill="#7A9B6B"/>
+                    
+                    <!-- Asia -->
+                    <path d="M 36 14 L 44 12 L 48 16 L 52 18 L 50 24 L 46 26 L 42 28 L 38 24 L 36 20 Z" fill="#6B8B5A"/>
+                    <path d="M 42 28 L 48 30 L 52 34 L 50 38 L 46 36 L 42 34 Z" fill="#6B8B5A"/>
+                    
+                    <!-- Australia -->
+                    <path d="M 44 40 L 48 38 L 52 40 L 50 44 L 46 42 Z" fill="#8BAC7A"/>
+                    
+                    <!-- Continent shading for depth -->
+                    <path d="M 12 18 L 16 16 L 18 18 L 16 20 L 14 20 Z" fill="#8BAC7A"/>
+                    <path d="M 30 22 L 32 24 L 34 26 L 32 28 L 30 26 Z" fill="#8BAC7A"/>
+                    <path d="M 36 14 L 40 12 L 42 14 L 40 16 L 38 16 Z" fill="#7A9B6B"/>
+                    
+                    <!-- Subtle highlight on top-left for dimension -->
+                    <path d="M 32 2 A 30 30 0 0 1 45 8 A 28 28 0 0 0 32 4 Z" fill="#7BA5D8" opacity="0.6"/>
+                    
+                    <!-- Pixel grid effect -->
+                    <defs>
+                        <pattern id="pixelGrid" width="2" height="2" patternUnits="userSpaceOnUse">
+                            <rect width="2" height="2" fill="none" stroke="#5A8BC4" stroke-width="0.1" opacity="0.3"/>
+                        </pattern>
+                    </defs>
+                    <circle cx="32" cy="32" r="30" fill="url(#pixelGrid)" opacity="0.2"/>
+                </svg>
+            </div>
+            <div class="flight-path">
+                <div class="waypoint" data-order="1" style="left: 10%; top: 60%;">1</div>
+                <div class="waypoint" data-order="2" style="left: 30%; top: 40%;">2</div>
+                <div class="waypoint" data-order="3" style="left: 60%; top: 30%;">3</div>
+                <div class="waypoint" data-order="4" style="left: 80%; top: 50%;">4</div>
+                <div class="dotted-trail"></div>
+                <div class="pixel-plane"></div>
+            </div>
+            <div class="instruction">✈️ Click waypoints 1 → 2 → 3 → 4 to complete the journey</div>
+            <button class="pixel-btn" id="flight-continue" style="display: none;" onclick="nextPage(3)">Continue Journey</button>
+        </div>
+    </div>
+
+    <!-- Page 3: Heart Collection Game -->
+    <div class="page" id="page3">
+        <div class="pixel-message-box">
+            <h1>💕 Collect My Hearts</h1>
+            <div class="heart-counter">Hearts Collected: <span id="heartCount">0</span>/5</div>
+            <div class="heart-collection-area" id="heartArea"></div>
+            <div class="instruction">💖 Click all the floating hearts to unlock the love letter!</div>
+            <div class="pixel-envelope" id="envelope"></div>
+            <div class="pixel-letter" id="love-letter">
+                <h2 style="color: #ff69b4; font-size: 12px;">Dear Mahal Ko 💕</h2>
+                <p>From across the miles and through the screens, my heart finds its way to yours...</p>
+                <p>We met in the most unexpected yet amazing way, and I really felt God's presence throughout our entire journey as a couple. I'm so grateful to have experienced His perfect timing.</p>
+                <p>Imagine two introverted people who had almost given up on finding love because we were content being just ourselves, yet somehow found each other and fell deeply in love? I had almost uninstalled 'Boo' when we matched! I'll never forget how you had the most interesting, witty, and unique way of messaging me. I'm so glad I replied, but I'm even happier that you took the courage to message me first!</p>
+                <p>If you were here with me, you'd receive a handwritten, cursive love letter on scented paper, wrapped with all my love... but this will have to do for now. I hope you appreciate this special project I made for you, because it's crafted with so much love. (Even though I was super nervous and a little intimidated since you're so creative and you're the talented game developer between the two of us!)</p>
+                <p>I just want to express how grateful I am and how incredibly special you are to me. Thank you for making me feel so loved and safe every single day. I hope I can make you feel the same way too. You are the most amazing, kind, intelligent, thoughtful, sweet, caring, sexy, and sooooooo handsome person I know. (Please help me with more adjectives, tbh, because there's so much beauty and love that I see in you, and words are never enough to express them all!)</p>
+                <p>I'm beyond excited that one day, I'll be able to kiss you, feel your warm embrace, travel to beautiful places together, and cherish every moment (even the mundane ones) simply because you're with me. I can't wait to create amazing things together, be our silly selves with each other, build our dreams, start our own family, and co-create a beautiful life with God by our side.</p>
+                <p>Oh my goodness, I feel so incredibly blessed to have you on this journey with me. I'm blessed knowing that one day, you'll be an amazing husband and father to our kids because you're just super duper cool, and I really, really love your brilliant mind.</p>
+                <p>We may be separated by thousands of miles for now, but please know that my heart is always with you, beating in sync with yours.</p>
+                <p>I'm counting down the days until I can see you next year, my love.</p>
+                <p>I hope you have the most wonderful day because you deserve all the happiness in the world, and I pray that God will continue to bless you and grant you all the desires of your heart.</p>
+                <p>Happy Birthday, my love! Happy 1st year anniversary, mahal ko, my pogi! Here's to many more beautiful years of love, laughter, and dreams coming true. 🥰🥰🥰</p>
+                <p style="margin-top: 15px; color: #ff69b4; text-align: center; font-style: italic;">Mahal kita, Jack. Araw-araw. 💖</p>
+                <p style="text-align: right; margin-top: 15px; color: #ff69b4;">Love, and forever yours,<br>Sebby 💕</p>
+            </div>
+            <button class="pixel-btn" id="letter-continue" style="display: none;" onclick="nextPage(4)">Continue</button>
+        </div>
+    </div>
+
+    <!-- Page 4: Star Constellation Minigame -->
+    <div class="page" id="page4">
+        <div class="pixel-message-box">
+            <h1>⭐ Connect Our Stars</h1>
+            <p>Connect the stars to reveal a constellation</p>
+            <p>linked by destiny...</p>
+            <div class="constellation-hint">✨ Click each star to connect them in sequence</div>
+            <div class="constellation-game" id="constellationGame"></div>
+            <div class="constellation-message" id="constellationMessage">
+                <h2>💫 Just like Perseus and Andromeda...</h2>
+                <p>Two souls destined to find each other across the vastness of time, oceans, and pixels.</p>
+                <p style="margin-top: 15px; font-style: italic; opacity: 0.9;">We found each other. And every version of me is thankful we did. 💕</p>
+            </div>
+            <button class="pixel-btn" id="constellation-continue" style="display: none;" onclick="nextPage(5)">Continue Our Story</button>
+        </div>
+    </div>
+
+    <!-- Page 5: Memory Matching Game -->
+    <div class="page" id="page5">
+        <div class="pixel-message-box">
+            <h1>🧠 Memory Match Game</h1>
+            <div class="match-counter">Matches Found: <span id="matchCount">0</span>/4</div>
+            <div class="memory-grid" id="memoryGrid"></div>
+            <div class="love-message" id="loveMessage">
+                <h4 id="loveMessageTitle"></h4>
+                <p id="loveMessageText"></p>
+            </div>
+            <div class="final-love-message" id="finalLoveMessage">
+                <p>These are just a <strong>few</strong> of the reasons I love you... But believe me, I could match a thousand more. 💕</p>
+            </div>
+            <div class="instruction">🎯 Find all matching pairs to unlock your birthday surprise!</div>
+            <button class="pixel-btn" id="memory-continue" style="display: none;" onclick="nextPage(6)">Birthday Surprise</button>
+        </div>
+    </div>
+
+    <!-- Page 6: Candle Sequence Game -->
+    <div class="page" id="page6">
+        <div class="pixel-message-box">
+            <h1>🎂 Blow the Candles... and Make a Wish</h1>
+            <div class="wish-invitation">
+                <p>Close your eyes. Think of every dream you've ever carried quietly.</p>
+                <p>Now, blow the candles — and let the universe respond.</p>
+                <p style="margin-top: 15px; color: #ffd700; font-style: italic;">✨ You were born for something extraordinary.</p>
+            </div>
+            <div class="candle-hint">🕯️ Blow out candles from left to right: 1 → 2 → 3</div>
+            <div class="pixel-birthday-cake">
+                <div class="pixel-candles">
+                    <div class="pixel-candle" data-candle="1"></div>
+                    <div class="pixel-candle" data-candle="2"></div>
+                    <div class="pixel-candle" data-candle="3"></div>
+                </div>
+            </div>
+            <div class="instruction">🎈 Click the candles in the right order to reveal your destiny!</div>
+            
+            <!-- Magical activation message -->
+            <div class="activation-blessing" id="activationBlessing">
+                <p style="color: #ffd700; font-style: italic;">✨ Your wish has been heard...</p>
+                <p>The universe is responding with three sacred gifts — reminders of who you are and what's possible.</p>
+            </div>
+            
+            <div class="pixel-gifts-container" id="gifts-container">
+                <div class="pixel-gift destiny-gift">
+                    <div class="pixel-gift-icon controller">🎮</div>
+                    <h3>For the worlds you'll bring to life</h3>
+                    <p style="font-style: italic; opacity: 0.9;">You don't just play games — you dream in code and pixels. Every world you create will carry pieces of your heart, and players everywhere will feel the magic you pour into every detail.</p>
+                </div>
+                <div class="pixel-gift destiny-gift">
+                    <div class="pixel-gift-icon pen">✍️</div>
+                    <h3>For the stories only you can tell</h3>
+                    <p style="font-style: italic; opacity: 0.9;">Your words are portals to other worlds. Whether it's a sketch that captures a moment or a story that changes someone's life — your creativity is a gift the world desperately needs.</p>
+                </div>
+                <div class="pixel-gift destiny-gift">
+                    <div class="pixel-gift-icon bible">📖</div>
+                    <h3>For the truth that will guide you</h3>
+                    <p style="font-style: italic; opacity: 0.9;">Your faith isn't just belief — it's your superpower. It's the foundation that makes everything else possible, the compass that never fails, and the reason I trust our future completely.</p>
+                </div>
+                
+                <!-- Closing blessing -->
+                <div class="final-blessing" id="finalBlessing">
+                    <h2 style="color: #ff69b4; margin-bottom: 20px;">You already have everything you need inside you.</h2>
+                    <p>Now go — create boldly, love deeply, and trust the timing of your life.</p>
+                    <p style="margin-top: 15px; color: #ffd700; font-style: italic;">I'll be here, always. 💕</p>
+                </div>
+            </div>
+            
+            <!-- Bible Verse -->
+            <div class="bible-verse" id="bibleVerse">
+                <h3>✨ A Promise for Us</h3>
+                <p>"He has made everything beautiful in its time."</p>
+                <p class="reference">— Ecclesiastes 3:11</p>
+                <p style="margin-top: 15px; color: #ff69b4; font-size: 10px;">Our time is coming, my love. Every moment has been leading us to each other. 💕</p>
+            </div>
+            
+            <button class="pixel-btn" id="candle-continue" style="display: none;" onclick="showFinalMessage()">Complete Our Journey</button>
+        </div>
+    </div>
+
+    <!-- Final Message -->
+    <div class="page" id="finalPage">
+        <div class="pixel-message-box">
+            <div class="final-love-letter">
+                <h1 style="color: #ff69b4; font-size: 16px; margin-bottom: 30px;">💌 To Be Continued...</h1>
+                
+                <div class="final-message-content">
+                    <p>Every page we've written together so far has led us here — and still, this is only the beginning.</p>
+                    
+                    <p>I can't wait for all that's ahead: The places we'll explore, the dreams we'll bring to life, the quiet mornings, the loud laughter, the family we'll build, and the legacy we'll co-create with God at the center.</p>
+                    
+                    <p style="margin-top: 25px; color: #ff69b4; font-size: 12px;">Happy Birthday and Happy Anniversary, mahal ko.</p>
+                    
+                    <p style="margin-top: 15px; color: #ffd700; font-style: italic; font-size: 13px;">I love you deeply, endlessly, and forever, Jack. 💕</p>
+                </div>
+            </div>
+            
+            <div class="bible-verse show" style="margin-top: 40px;">
+                <h3>Our Forever Promise</h3>
+                <p>"He has made everything beautiful in its time."</p>
+                <p class="reference">— Ecclesiastes 3:11</p>
+                <p style="margin-top: 20px; color: #333; font-size: 10px; font-style: italic;">Our time is now, our future is bright, and our love is eternal. 🌟</p>
+            </div>
+            
+            <div class="completion-celebration">
+                <h2 style="color: #ff69b4; font-size: 14px;">🎮 Journey Complete! 🎮</h2>
+                <p style="font-size: 11px; margin-top: 10px;">You've unlocked every piece of my heart.</p>
+                <p style="font-size: 9px; margin-top: 5px; opacity: 0.8;">Now let's write the rest of our story together...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let gameState = {
+            heartsCollected: 0,
+            currentPage: 1,
+            flightWaypoints: [],
+            memoryCards: [],
+            flippedCards: [],
+            matches: 0,
+            candleSequence: [],
+            constellationConnected: 0,
+            completedSections: 0
+        };
+
+        // Memory card pairs - Back to matching pairs but better messages
+        const memoryPairs = [
+            {id: 1, text: "Your\nMind", pair: 1, category: "Intelligence"},
+            {id: 2, text: "Your\nMind", pair: 1, category: "Intelligence"},
+            {id: 3, text: "Your\nHeart", pair: 2, category: "Creativity & Passion"},
+            {id: 4, text: "Your\nHeart", pair: 2, category: "Creativity & Passion"},
+            {id: 5, text: "Your\nSoul", pair: 3, category: "Unique Weirdness"},
+            {id: 6, text: "Your\nSoul", pair: 3, category: "Unique Weirdness"},
+            {id: 7, text: "Your\nFaith", pair: 4, category: "Faith"},
+            {id: 8, text: "Your\nFaith", pair: 4, category: "Faith"}
+        ];
+
+        // Enhanced love messages - more heartfelt and kilig
+        const loveMessages = {
+            "Intelligence": "The way your mind works literally takes my breath away. You don't just think — you create entire worlds in your head. Watching you solve problems, build things, dream up impossible ideas... I fall in love with your brilliance over and over again. 💭✨",
+            "Creativity & Passion": "Your heart beats in colors I've never seen before. Everything you touch becomes art — every game you build, every story you tell, every little doodle you make. You create with such pure love that it makes me believe in magic again. 🎨💕",
+            "Unique Weirdness": "You're beautifully, wonderfully, perfectly weird — and it's my favorite thing about you. Your random thoughts, your silly jokes, the way you see the world completely differently... You make ordinary moments extraordinary just by being unapologetically YOU. 🌟",
+            "Faith": "Your relationship with God is one of the most beautiful things I've ever witnessed. The way you pray, the way you trust, the way your faith shapes every decision you make... It makes me feel so safe knowing that our love is blessed and guided by something bigger than us. 🙏💖"
+        };
+
+        // Background music control
+        function initBackgroundMusic() {
+            const music = document.getElementById('bgMusic');
+            music.volume = 0.3; // Low volume
+            // Try to play music (will require user interaction in most browsers)
+            document.addEventListener('click', () => {
+                if (music.paused) {
+                    music.play().catch(e => console.log('Audio autoplay prevented'));
+                }
+            }, { once: true });
+        }
+
+        // Progress tracking with notifications
+        function fillHeart(heartNumber) {
+            const heart = document.getElementById(`heart${heartNumber}`);
+            heart.classList.add('filled');
+            gameState.completedSections++;
+            showProgressNotification(gameState.completedSections);
+            createSparkles();
+        }
+
+        function showProgressNotification(completed) {
+            const notification = document.getElementById('progressNotification');
+            notification.textContent = `💖 ${completed}/6 Unlocked`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+
+        // Create floating sparkles effect
+        function createSparkles() {
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    sparkle.style.left = Math.random() * 100 + '%';
+                    sparkle.style.top = '100%';
+                    sparkle.style.animationDelay = Math.random() * 0.5 + 's';
+                    
+                    document.body.appendChild(sparkle);
+                    
+                    setTimeout(() => {
+                        sparkle.remove();
+                    }, 4000);
+                }, i * 100);
+            }
+        }
+
+        // Enhanced star creation
+        function createPixelStars() {
+            const starsContainer = document.getElementById('stars');
+            
+            // Create regular pixel stars
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+            
+            // Create plus-shaped stars
+            for (let i = 0; i < 25; i++) {
+                const star = document.createElement('div');
+                star.className = 'star plus';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Page 1: Secret Word Challenge - Updated for "mahal ko"
+        function checkSecretWord() {
+            const input = document.getElementById('secretWord').value.toLowerCase().trim();
+            const correctWords = ['mahal ko', 'mahalko'];
+            
+            if (correctWords.includes(input)) {
+                fillHeart(1);
+                setTimeout(() => nextPage(2), 1000);
+            } else {
+                // Enhanced shake animation
+                const box = document.querySelector('.pixel-message-box');
+                box.style.animation = 'shake 0.6s ease-in-out';
+                setTimeout(() => {
+                    box.style.animation = '';
+                }, 600);
+            }
+        }
+
+        // Page 2: Flight Path Puzzle
+        function initFlightPath() {
+            const waypoints = document.querySelectorAll('.waypoint');
+            waypoints.forEach(waypoint => {
+                waypoint.addEventListener('click', function() {
+                    const order = parseInt(this.dataset.order);
+                    
+                    if (order === gameState.flightWaypoints.length + 1) {
+                        this.classList.add('clicked');
+                        this.style.background = 'linear-gradient(45deg, #ff69b4, #ff1493)';
+                        this.style.boxShadow = '0 0 20px rgba(255, 105, 180, 0.8)';
+                        gameState.flightWaypoints.push(order);
+                        
+                        if (gameState.flightWaypoints.length === 4) {
+                            // Enhanced plane animation
+                            const plane = document.querySelector('.pixel-plane');
+                            const trail = document.querySelector('.dotted-trail');
+                            
+                            plane.style.display = 'block';
+                            plane.style.animation = 'flyPixelPlane 4s ease-in-out forwards';
+                            trail.style.animation = 'drawPixelTrail 4s ease-in-out forwards';
+                            
+                            setTimeout(() => {
+                                document.getElementById('flight-continue').style.display = 'inline-block';
+                                fillHeart(2);
+                            }, 4000);
+                        }
+                    }
+                });
+            });
+        }
+
+        // Page 3: Heart Collection Game
+        function initHeartCollection() {
+            const area = document.getElementById('heartArea');
+            const positions = [
+                {left: '15%', top: '20%'},
+                {left: '75%', top: '30%'},
+                {left: '40%', top: '60%'},
+                {left: '70%', top: '70%'},
+                {left: '25%', top: '80%'}
+            ];
+
+            positions.forEach((pos, index) => {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.style.left = pos.left;
+                heart.style.top = pos.top;
+                heart.style.animationDelay = `${index * 0.5}s`;
+                
+                heart.addEventListener('click', function() {
+                    this.style.animation = 'heartCollect 0.8s ease-out forwards';
+                    this.style.pointerEvents = 'none';
+                    
+                    gameState.heartsCollected++;
+                    document.getElementById('heartCount').textContent = gameState.heartsCollected;
+                    
+                    if (gameState.heartsCollected === 5) {
+                        setTimeout(() => {
+                            document.getElementById('envelope').classList.add('unlocked');
+                            fillHeart(3);
+                        }, 800);
+                    }
+                });
+                
+                area.appendChild(heart);
+            });
+        }
+
+        // Page 3: Open Letter
+        function openLetter() {
+            const letter = document.getElementById('love-letter');
+            const continueBtn = document.getElementById('letter-continue');
+            letter.classList.add('show');
+            
+            setTimeout(() => {
+                continueBtn.style.display = 'inline-block';
+            }, 1500);
+        }
+
+        // Page 4: Star Constellation Minigame
+        function initConstellation() {
+            const game = document.getElementById('constellationGame');
+            const starPositions = [
+                {left: '25%', top: '30%', name: 'Perseus-1'},
+                {left: '45%', top: '20%', name: 'Perseus-2'},
+                {left: '35%', top: '50%', name: 'Perseus-3'},
+                {left: '65%', top: '40%', name: 'Andromeda-1'},
+                {left: '75%', top: '60%', name: 'Andromeda-2'}
+            ];
+
+            starPositions.forEach((pos, index) => {
+                const star = document.createElement('div');
+                star.className = 'constellation-star';
+                star.style.left = pos.left;
+                star.style.top = pos.top;
+                star.dataset.index = index;
+                star.dataset.name = pos.name;
+                
+                star.addEventListener('click', function() {
+                    if (this.classList.contains('connected')) return;
+                    
+                    this.classList.add('connected');
+                    gameState.constellationConnected++;
+                    
+                    if (gameState.constellationConnected > 1) {
+                        drawConstellationLine(gameState.constellationConnected - 2, gameState.constellationConnected - 1);
+                    }
+                    
+                    if (gameState.constellationConnected === 5) {
+                        setTimeout(() => {
+                            document.getElementById('constellationMessage').classList.add('show');
+                            document.getElementById('constellation-continue').style.display = 'inline-block';
+                            fillHeart(4);
+                            createConstellationGlow();
+                        }, 1000);
+                    }
+                });
+                
+                game.appendChild(star);
+            });
+        }
+
+        function drawConstellationLine(startIndex, endIndex) {
+            const game = document.getElementById('constellationGame');
+            const stars = game.querySelectorAll('.constellation-star');
+            const startStar = stars[startIndex];
+            const endStar = stars[endIndex];
+            
+            const gameRect = game.getBoundingClientRect();
+            const startRect = startStar.getBoundingClientRect();
+            const endRect = endStar.getBoundingClientRect();
+            
+            const startX = startRect.left - gameRect.left + 6;
+            const startY = startRect.top - gameRect.top + 6;
+            const endX = endRect.left - gameRect.left + 6;
+            const endY = endRect.top - gameRect.top + 6;
+            
+            const length = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
+            const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+            
+            const line = document.createElement('div');
+            line.className = 'constellation-line visible';
+            line.style.left = startX + 'px';
+            line.style.top = startY + 'px';
+            line.style.width = length + 'px';
+            line.style.transform = `rotate(${angle}deg)`;
+            
+            game.appendChild(line);
+        }
+
+        function createConstellationGlow() {
+            const game = document.getElementById('constellationGame');
+            game.style.boxShadow = '0 0 40px rgba(255, 105, 180, 0.8), inset 0 0 40px rgba(255, 105, 180, 0.2)';
+        }
+
+        // Page 5: Memory Matching Game
+        function initMemoryGame() {
+            const grid = document.getElementById('memoryGrid');
+            const shuffled = [...memoryPairs].sort(() => Math.random() - 0.5);
+            
+            shuffled.forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'memory-card';
+                cardElement.textContent = '?';
+                cardElement.dataset.pair = card.pair;
+                cardElement.dataset.text = card.text;
+                cardElement.dataset.id = card.id;
+                cardElement.dataset.category = card.category;
+                
+                cardElement.addEventListener('click', function() {
+                    if (this.classList.contains('flipped') || this.classList.contains('matched') || gameState.flippedCards.length === 2) {
+                        return;
+                    }
+                    
+                    this.classList.add('flipped');
+                    this.textContent = this.dataset.text;
+                    gameState.flippedCards.push(this);
+                    
+                    if (gameState.flippedCards.length === 2) {
+                        setTimeout(checkMatch, 1200);
+                    }
+                });
+                
+                grid.appendChild(cardElement);
+            });
+        }
+
+        function checkMatch() {
+            const [card1, card2] = gameState.flippedCards;
+            
+            if (card1.dataset.pair === card2.dataset.pair) {
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                gameState.matches++;
+                document.getElementById('matchCount').textContent = gameState.matches;
+                
+                // Show love message for this match
+                const category = card1.dataset.category;
+                showLoveMessage(category, loveMessages[category]);
+                
+                if (gameState.matches === 4) {
+                    setTimeout(() => {
+                        document.getElementById('finalLoveMessage').classList.add('show');
+                    }, 2000);
+                    
+                    setTimeout(() => {
+                        document.getElementById('memory-continue').style.display = 'inline-block';
+                        fillHeart(5);
+                        createSparkles();
+                    }, 4000);
+                }
+            } else {
+                card1.classList.remove('flipped');
+                card2.classList.remove('flipped');
+                card1.textContent = '?';
+                card2.textContent = '?';
+            }
+            
+            gameState.flippedCards = [];
+        }
+
+        function showLoveMessage(title, message) {
+            const messageEl = document.getElementById('loveMessage');
+            const titleEl = document.getElementById('loveMessageTitle');
+            const textEl = document.getElementById('loveMessageText');
+            
+            titleEl.textContent = title;
+            textEl.textContent = message;
+            
+            messageEl.classList.add('show');
+            
+            // Hide message after 3 seconds
+            setTimeout(() => {
+                messageEl.classList.remove('show');
+            }, 3500);
+        }
+
+        // Page 6: Enhanced Candle Sequence Game
+        function initCandleGame() {
+            const candles = document.querySelectorAll('.pixel-candle');
+            
+            candles.forEach(candle => {
+                candle.addEventListener('click', function() {
+                    const candleNum = parseInt(this.dataset.candle);
+                    const expectedNext = gameState.candleSequence.length + 1;
+                    
+                    if (candleNum === expectedNext) {
+                        this.classList.add('blown');
+                        gameState.candleSequence.push(candleNum);
+                        
+                        if (gameState.candleSequence.length === 3) {
+                            // Show activation blessing first
+                            setTimeout(() => {
+                                document.getElementById('activationBlessing').classList.add('show');
+                            }, 800);
+                            
+                            // Then reveal gifts one by one
+                            setTimeout(() => {
+                                document.getElementById('gifts-container').classList.add('show');
+                                revealDestinyGifts();
+                            }, 2000);
+                            
+                            // Show bible verse
+                            setTimeout(() => {
+                                document.getElementById('bibleVerse').classList.add('show');
+                            }, 5000);
+                            
+                            // Show final blessing and continue button
+                            setTimeout(() => {
+                                document.getElementById('finalBlessing').classList.add('show');
+                                document.getElementById('candle-continue').style.display = 'inline-block';
+                                fillHeart(6);
+                                createConfetti();
+                            }, 6500);
+                        }
+                    } else {
+                        // Reset sequence if wrong order
+                        gameState.candleSequence = [];
+                        candles.forEach(c => c.classList.remove('blown'));
+                    }
+                });
+            });
+        }
+
+        function revealDestinyGifts() {
+            const gifts = document.querySelectorAll('.destiny-gift');
+            gifts.forEach((gift, index) => {
+                setTimeout(() => {
+                    gift.classList.add('reveal');
+                    createSparkles();
+                }, index * 1000);
+            });
+        }
+
+        // Enhanced confetti effect
+        function createConfetti() {
+            const colors = ['#ff69b4', '#ffd700', '#4a90a4', '#32cd32', '#cd853f', '#ff1493', '#00ff00'];
+            
+            for (let i = 0; i < 40; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.style.position = 'fixed';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.top = '-10px';
+                    confetti.style.width = (Math.random() * 6 + 4) + 'px';
+                    confetti.style.height = (Math.random() * 6 + 4) + 'px';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animation = `confettiFall ${Math.random() * 2 + 3}s linear`;
+                    confetti.style.zIndex = '1000';
+                    confetti.style.borderRadius = '50%';
+                    
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }, i * 80);
+            }
+        }
+
+        // Show final message
+        function showFinalMessage() {
+            nextPage('final');
+            setTimeout(() => {
+                createConfetti();
+                setTimeout(createConfetti, 1500);
+                setTimeout(createConfetti, 3000);
+            }, 500);
+        }
+
+        // Enhanced page navigation
+        function nextPage(pageNum) {
+            const currentPage = document.querySelector('.page.active');
+            const nextPageElement = pageNum === 'final' ? 
+                document.getElementById('finalPage') : 
+                document.getElementById(`page${pageNum}`);
+            
+            // Fade out current page
+            currentPage.style.opacity = '0';
+            currentPage.style.transform = 'translateY(-20px)';
+            
+            setTimeout(() => {
+                currentPage.classList.remove('active');
+                nextPageElement.classList.add('active');
+                
+                // Initialize page-specific content
+                if (pageNum === 2) {
+                    initFlightPath();
+                } else if (pageNum === 3) {
+                    initHeartCollection();
+                    setTimeout(() => {
+                        document.getElementById('envelope').addEventListener('click', openLetter);
+                    }, 100);
+                } else if (pageNum === 4) {
+                    initConstellation();
+                } else if (pageNum === 5) {
+                    initMemoryGame();
+                } else if (pageNum === 6) {
+                    initCandleGame();
+                }
+                
+                gameState.currentPage = pageNum;
+            }, 400);
+        }
+
+        // Add CSS animations
+        const additionalCSS = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+
+            .waypoint {
+                position: absolute;
+                width: 24px;
+                height: 24px;
+                background: linear-gradient(45deg, #ffd700, #ffff00);
+                border: 3px solid rgba(255, 255, 255, 0.8);
+                border-radius: 50%;
+                cursor: pointer;
+                transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #000;
+                font-weight: bold;
+                font-size: 12px;
+                box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            }
+
+            .waypoint:hover {
+                transform: scale(1.2);
+                box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+            }
+
+            .waypoint.clicked {
+                animation: waypointPulse 0.6s ease;
+            }
+
+            @keyframes waypointPulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.4); }
+                100% { transform: scale(1.1); }
+            }
+
+            .flight-path {
+                position: relative;
+                width: 100%;
+                height: 180px;
+                margin: 30px 0;
+            }
+
+            .dotted-trail {
+                position: absolute;
+                top: 75px;
+                left: 0;
+                width: 0;
+                height: 3px;
+                background: repeating-linear-gradient(
+                    to right,
+                    #e8d5b7 0px,
+                    #e8d5b7 10px,
+                    transparent 10px,
+                    transparent 20px
+                );
+                border-radius: 2px;
+            }
+
+            .pixel-plane {
+                position: absolute;
+                left: -60px;
+                top: 60px;
+                width: 50px;
+                height: 30px;
+                background: linear-gradient(45deg, #ffb6c1, #ff69b4);
+                clip-path: polygon(0% 50%, 20% 0%, 80% 0%, 100% 40%, 90% 100%, 30% 100%);
+                display: none;
+                z-index: 10;
+                box-shadow: 0 4px 15px rgba(255, 182, 193, 0.6);
+            }
+
+            .pixel-envelope {
+                width: 180px;
+                height: 140px;
+                background: linear-gradient(135deg, #d4a574, #c19a6b);
+                border: 3px solid rgba(0, 0, 0, 0.8);
+                position: relative;
+                cursor: pointer;
+                margin: 20px auto;
+                transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+                opacity: 0.5;
+                pointer-events: none;
+                border-radius: 10px;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            }
+
+            .pixel-envelope.unlocked {
+                opacity: 1;
+                pointer-events: auto;
+                animation: envelopeGlow 2s ease-in-out infinite alternate;
+            }
+
+            @keyframes envelopeGlow {
+                0% { box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); }
+                100% { box-shadow: 0 12px 35px rgba(255, 105, 180, 0.4), 0 0 30px rgba(255, 105, 180, 0.3); }
+            }
+
+            .pixel-envelope:hover {
+                transform: translateY(-3px) scale(1.02);
+            }
+
+            .pixel-envelope::before {
+                content: '';
+                position: absolute;
+                top: 15px;
+                left: 15px;
+                right: 15px;
+                bottom: 15px;
+                border: 2px solid rgba(139, 69, 19, 0.6);
+                border-radius: 5px;
+            }
+
+            .pixel-envelope::after {
+                content: '💕';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 28px;
+                animation: heartBeat 2s ease-in-out infinite;
+            }
+
+            @keyframes heartBeat {
+                0%, 100% { transform: translate(-50%, -50%) scale(1); }
+                50% { transform: translate(-50%, -50%) scale(1.1); }
+            }
+
+            .pixel-letter {
+                display: none;
+                background: linear-gradient(135deg, #f5f5dc, #faf0e6);
+                color: #333;
+                padding: 30px;
+                border: 3px solid rgba(0, 0, 0, 0.3);
+                max-width: 500px;
+                width: 90%;
+                margin: 20px auto;
+                font-size: 11px;
+                line-height: 20px;
+                border-radius: 15px;
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            }
+
+            .pixel-letter.show {
+                display: block;
+                animation: pixelLetterAppear 1s ease-out;
+            }
+
+            @keyframes pixelLetterAppear {
+                0% { transform: translateY(30px); opacity: 0; }
+                100% { transform: translateY(0); opacity: 1; }
+            }
+
+            .pixel-birthday-cake {
+                width: 200px;
+                height: 160px;
+                background: linear-gradient(135deg, #cd853f, #daa520);
+                border: 4px solid rgba(0, 0, 0, 0.8);
+                position: relative;
+                margin: 60px auto 20px auto;
+                border-radius: 15px;
+                box-shadow: 0 12px 30px rgba(205, 133, 63, 0.4);
+                transition: all 0.3s ease;
+            }
+
+            .pixel-birthday-cake:hover {
+                transform: scale(1.05);
+                box-shadow: 0 15px 35px rgba(205, 133, 63, 0.6);
+            }
+
+            .pixel-birthday-cake::before {
+                content: '';
+                position: absolute;
+                top: -15px;
+                left: 15px;
+                right: 15px;
+                height: 35px;
+                background: linear-gradient(135deg, #ff69b4, #ff1493);
+                border: 3px solid rgba(0, 0, 0, 0.8);
+                border-radius: 10px;
+            }
+
+            .pixel-candles {
+                position: absolute;
+                top: -50px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                gap: 25px;
+            }
+
+            .pixel-candle {
+                width: 8px;
+                height: 30px;
+                background: linear-gradient(180deg, #fff, #f0f0f0);
+                border: 2px solid rgba(0, 0, 0, 0.8);
+                position: relative;
+                cursor: pointer;
+                transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+                border-radius: 4px;
+            }
+
+            .pixel-candle::before {
+                content: '';
+                position: absolute;
+                top: -12px;
+                left: -3px;
+                width: 14px;
+                height: 12px;
+                background: linear-gradient(45deg, #ffa500, #ff8c00);
+                border: 2px solid rgba(0, 0, 0, 0.8);
+                border-radius: 50%;
+                transition: all 0.4s ease;
+                animation: flameFlicker 1.5s ease-in-out infinite alternate;
+            }
+
+            @keyframes flameFlicker {
+                0% { transform: scale(1) rotate(-2deg); }
+                100% { transform: scale(1.1) rotate(2deg); }
+            }
+
+            .pixel-candle.blown::before {
+                background: linear-gradient(45deg, #666, #888);
+                animation: smokeRise 1.5s ease-out;
+            }
+
+            .pixel-candle:hover {
+                transform: scale(1.15);
+            }
+
+            @keyframes smokeRise {
+                0% { opacity: 1; transform: translateY(0) scale(1); }
+                100% { opacity: 0; transform: translateY(-25px) scale(1.5); }
+            }
+
+            .pixel-gifts-container {
+                display: none;
+                margin-top: 40px;
+            }
+
+            .pixel-gifts-container.show {
+                display: block;
+                animation: pixelGiftsAppear 1.2s ease-out;
+            }
+
+            @keyframes pixelGiftsAppear {
+                0% { opacity: 0; transform: translateY(40px); }
+                100% { opacity: 1; transform: translateY(0); }
+            }
+
+            .pixel-gift {
+                background: linear-gradient(135deg, rgba(74, 85, 104, 0.9), rgba(45, 55, 72, 0.9));
+                border: 3px solid rgba(255, 255, 255, 0.8);
+                padding: 25px;
+                margin: 20px auto;
+                max-width: 300px;
+                border-radius: 15px;
+                backdrop-filter: blur(10px);
+                animation: pixelFloat 3s ease-in-out infinite;
+                transition: all 0.3s ease;
+            }
+
+            .pixel-gift:hover {
+                transform: translateY(-5px) scale(1.02);
+                box-shadow: 0 12px 30px rgba(255, 105, 180, 0.3);
+            }
+
+            .pixel-gift:nth-child(2) { animation-delay: 0.5s; }
+            .pixel-gift:nth-child(3) { animation-delay: 1s; }
+
+            @keyframes pixelFloat {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-10px); }
+            }
+
+            .pixel-gift-icon {
+                width: 40px;
+                height: 40px;
+                margin: 0 auto 15px;
+                border: 2px solid rgba(255, 255, 255, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 20px;
+                border-radius: 10px;
+                transition: all 0.3s ease;
+            }
+
+            .pixel-gift-icon:hover {
+                transform: scale(1.1) rotate(5deg);
+            }
+
+            .pixel-gift-icon.controller {
+                background: linear-gradient(135deg, #666, #888);
+            }
+
+            .pixel-gift-icon.book {
+                background: linear-gradient(135deg, #8b4513, #a0522d);
+            }
+
+            .pixel-gift-icon.cross {
+                background: linear-gradient(135deg, #4a5568, #2d3748);
+            }
+        `;
+        
+        const style = document.createElement('style');
+        style.textContent = additionalCSS;
+        document.head.appendChild(style);
+
+        // Allow Enter key for secret word
+        document.addEventListener('DOMContentLoaded', function() {
+            const secretInput = document.getElementById('secretWord');
+            if (secretInput) {
+                secretInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        checkSecretWord();
+                    }
+                });
+            }
+        });
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', function() {
+            createPixelStars();
+            initBackgroundMusic();
+        });
+    </script>
+</body>
+</html>
